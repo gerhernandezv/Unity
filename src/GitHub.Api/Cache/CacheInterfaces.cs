@@ -40,6 +40,7 @@ namespace GitHub.Unity
 
         bool ValidateData();
         void InvalidateData();
+        void CancelInvalidation();
 
         DateTimeOffset LastUpdatedAt { get; }
         CacheType CacheType { get; }

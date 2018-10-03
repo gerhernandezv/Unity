@@ -221,6 +221,12 @@ namespace GitHub.Unity
             }
         }
 
+        public void CancelInvalidation()
+        {
+            Logger.Trace("CancelInvalidation");
+            isInvalidating = false;
+        }
+
         protected void SaveData(DateTimeOffset now, bool isChanged)
         {
             var isInitialized = IsInitialized;

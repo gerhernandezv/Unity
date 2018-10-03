@@ -205,61 +205,48 @@ namespace GitHub.Unity
                 return;
             }
 
-            bool handling = false;
-            try
+            Func<Exception, bool> catchHandler = (ex) => {
+                var managedCache = cacheContainer.GetCache(cacheType);
+                managedCache.CancelInvalidation();
+
+                return false;
+            };
+
+            switch (cacheType)
             {
-                switch (cacheType)
-                {
-                    case CacheType.Branches:
-                        handling = true;
-                        repositoryManager?.UpdateBranches().Start();
-                        break;
+                case CacheType.Branches:
+                    repositoryManager?.UpdateBranches().Catch(catchHandler).Start();
+                    break;
 
-                    case CacheType.GitLog:
-                        handling = true;
-                        repositoryManager?.UpdateGitLog().Start();
-                        break;
+                case CacheType.GitLog:
+                    repositoryManager?.UpdateGitLog().Catch(catchHandler).Start();
+                    break;
 
-                    case CacheType.GitAheadBehind:
-                        handling = true;
-                        repositoryManager?.UpdateGitAheadBehindStatus().Start();
-                        break;
+                case CacheType.GitAheadBehind:
+                    repositoryManager?.UpdateGitAheadBehindStatus().Catch(catchHandler).Start();
+                    break;
 
-                    case CacheType.GitLocks:
-                        if (CurrentRemote != null)
-                        {
-                            handling = true;
-                            repositoryManager?.UpdateLocks().Start();
-                        }
-                        break;
+                case CacheType.GitLocks:
+                    if (CurrentRemote != null)
+                    {
+                        repositoryManager?.UpdateLocks().Catch(catchHandler).Start();
+                    }
+                    break;
 
-                    case CacheType.GitUser:
-                        // user handles its own invalidation event
-                        break;
+                case CacheType.GitUser:
+                    // user handles its own invalidation event
+                    break;
 
-                    case CacheType.RepositoryInfo:
-                        handling = true;
-                        repositoryManager?.UpdateRepositoryInfo().Start();
-                        break;
+                case CacheType.RepositoryInfo:
+                    repositoryManager?.UpdateRepositoryInfo().Catch(catchHandler).Start();
+                    break;
 
-                    case CacheType.GitStatus:
-                        handling = true;
-                        repositoryManager?.UpdateGitStatus().Start();
-                        break;
+                case CacheType.GitStatus:
+                    repositoryManager?.UpdateGitStatus().Catch(catchHandler).Start();
+                    break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (handling)
-                {
-                    var managedCache = cacheContainer.GetCache(cacheType);
-                    managedCache.CancelInvalidation();
-                }
-
-                throw ex;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
             }
         }
 

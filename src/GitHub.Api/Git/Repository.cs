@@ -206,6 +206,8 @@ namespace GitHub.Unity
             }
 
             Func<Exception, bool> catchHandler = (ex) => {
+                Logger.Warning("Error updating CacheType:{0}", cacheType);
+
                 var managedCache = cacheContainer.GetCache(cacheType);
                 managedCache.CancelInvalidation();
 

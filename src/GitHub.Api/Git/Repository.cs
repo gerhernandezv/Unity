@@ -493,7 +493,15 @@ namespace GitHub.Unity
                 return;
             }
 
+            Func<Exception, bool> catchHandler = (ex) => {
+                var managedCache = cacheContainer.GetCache(CacheType.GitUser);
+                managedCache.CancelInvalidation();
+
+                return false;
+            };
+
             gitClient.GetConfigUserAndEmail()
+                     .Catch(catchHandler)
                      .ThenInUI((success, value) =>
                      {
                          if (success)

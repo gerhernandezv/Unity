@@ -145,7 +145,7 @@ namespace IntegrationTests
 
         public void CancelInvalidation()
         {
-            Logger.Trace("CancelInvalidation");
+            Logger.Warning("Cancelling Invalidation");
             isInvalidating = false;
         }
 
